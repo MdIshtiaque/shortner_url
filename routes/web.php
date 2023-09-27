@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\UrlController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedirectController;
 use Illuminate\Support\Facades\Route;
@@ -16,19 +18,21 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('pages.home');
+})->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
+    Route::post('/make-custom-url', [UrlController::class, 'makeCustomUrl'])->name('custom.url');
 });
 
 
-Route::get('/{url}', [RedirectController::class, 'redirect'])->name('redirect.url');
-require __DIR__.'/auth.php';
+Route::get('/{url}', [RedirectController::class, 'redirectToUrl'])->name('redirect.shortUrl');
+
+
+require __DIR__ . '/auth.php';

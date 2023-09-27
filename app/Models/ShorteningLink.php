@@ -10,4 +10,12 @@ class ShorteningLink extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function click() {
+        return $this->hasMany(ClickCount::class);
+    }
 }
