@@ -9,6 +9,7 @@
             <div class="form-group">
                 <label for="originalUrl">Enter your URL:</label>
                 <input type="url" class="form-control" id="originalUrl" placeholder="https://example.com" required>
+                <span id="errorSpan" style="color:red;"></span>
             </div>
             <button class="btn btn-primary btn-block" id="shortenBtn">Shorten URL</button>
             <div id="shortenedUrl" data-route="">
@@ -20,11 +21,22 @@
 @endsection
 
 @push('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#shortenBtn').click(function () {
 
                 var originalUrl = $('#originalUrl').val();
+
+                // Validate the URL using the 'validator' library
+                if (!validator.isURL(originalUrl, {require_protocol: true})) {
+                    $('#errorSpan').text("Please enter a valid URL.");
+                    document.getElementById("shortenedUrl").style.display = "none";
+                    return;
+                } else {
+                    $('#errorSpan').text("");
+                }
+
                 var userId = @json(auth()->check() ? auth()->user()->id : null);
                 var baseUrl = "{{ url('/') }}";
 
@@ -41,7 +53,6 @@
                         var redirectUrl = baseUrl + '/' + shortenedUrl;
                         $('#shortUrlLink').attr('href', redirectUrl).text("{{ env('APP_URL') }}" + "/" + shortenedUrl);
 
-
                         document.getElementById("shortenedUrl").style.display = "block";
                     },
                     error: function (xhr, status, error) {
@@ -50,5 +61,6 @@
                 });
             });
         });
+
     </script>
 @endpush

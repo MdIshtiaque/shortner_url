@@ -7,16 +7,32 @@
         .btn-edit-link {
             white-space: nowrap;
         }
+        .card-dashboard {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .card-dashboard:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header-dashboard {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            font-size: 24px;
+        }
     </style>
 @endpush
 
 @section('content')
-    <div class="card">
-        <div class="card-header">
+    <div class="card-dashboard">
+        <div class="card-header-dashboard">
             Shortening Link Statistics
         </div>
         <div class="card-body">
-            <table id="example" class="hover" style="width:100%">
+            <table id="example" class="hover" style="width: 0px !important;">
                 <thead>
                 <tr>
                     <th>Original Link</th>
