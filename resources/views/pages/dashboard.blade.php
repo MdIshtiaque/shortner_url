@@ -32,7 +32,7 @@
             Shortening Link Statistics
         </div>
         <div class="card-body">
-            <table id="example" class="hover" style="width: 0px !important;">
+            <table id="example" class="hover" style="width: 100% !important;">
                 <thead>
                 <tr>
                     <th>Original Link</th>
