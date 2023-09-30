@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\ShorteningLink;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ShorteningService
 {
@@ -21,11 +23,22 @@ class ShorteningService
         if (!$linkExist) {
             $shortUrl = $this->shortUrlLogic($request);
 
-            ShorteningLink::create([
+            DB::beginTransaction();
+
+            $shortLink = ShorteningLink::create([
                 'created_by' => $request->userId,
                 'original_link' => $request->originalUrl,
                 'shortening_link' => $shortUrl
             ]);
+
+            $shortLink->click()->create([
+                'shortening_link_id' => $shortLink->id,
+                'user_id' => $request->userId,
+                'count' => 0
+            ]);
+
+            DB::commit();
+
         } else {
             $shortUrl = $linkExist->shortening_link;
         }
