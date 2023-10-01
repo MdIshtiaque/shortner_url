@@ -1,38 +1,38 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{ route('home') }}">URL Shortener</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="{{ route('home') }}">Link Shortener</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+        aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ route('home') }}">Home <span class="sr-only">(current)</span></a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
             </li>
-            @if(auth()->check() != '')
+            @if (auth()->check() != '')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('user.dashboard') }}">Dashboard</a>
+                    <a class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">Dashboard</a>
                 </li>
             @endif
         </ul>
-        <span class="navbar-text">
-            @if(auth()->check() == '')
-                <div class="d-flex align-items-center">
-                    <a href="{{ route('login') }}" class="btn btn-primary ml-2">Login</a>
-                    <form action="{{ route('register') }}" method="get">
-                    @csrf
-                    <button type="submit" class="btn btn-success ml-2">Signup</button>
-                </form>
-            </div>
+        <ul class="navbar-nav ml-auto">
+            @if (auth()->check() == '')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('register') }}">Signup</a>
+                </li>
             @else
-                <div class="d-flex align-items-center">
-                    <p class="pr-2 pl-5 mb-0"><span style="font-weight: bold">Hi, {{ auth()->user()->name }}</span></p>
+                <p class="pr-2 pl-5 mb-0"><span class="nav-link" style="font-weight: bold">Hi,
+                        {{ auth()->user()->name }}</span></p>
+                <li class="nav-item">
                     <form action="{{ route('logoutUser') }}" method="post">
                         @csrf
-                        <button type="submit" class="btn btn-success">Log out</button>
+                        <button class="btn nav-link">Logout</button>
                     </form>
-                </div>
+                </li>
             @endif
-        </span>
+        </ul>
     </div>
 </nav>

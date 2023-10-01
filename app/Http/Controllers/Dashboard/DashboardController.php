@@ -20,10 +20,15 @@ class DashboardController extends Controller
                     $query->where('user_id', $userId);
                 })
                 ->get();
+            $totalGeneratedLink = $datas->count();
+            $totalClick = 0;
+            foreach ($datas as $count) {
+                $totalClick += $count->click[0]->count;
+            }
         } catch (\Exception $exception) {
 
         }
 
-        return view('pages.dashboard', ['datas' => $datas]);
+        return view('pages.dashboard', ['datas' => $datas, 'totalGeneratedLink' => $totalGeneratedLink, 'totalClick' => $totalClick]);
     }
 }

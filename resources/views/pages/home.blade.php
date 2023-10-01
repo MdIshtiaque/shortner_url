@@ -1,66 +1,76 @@
-@extends('welcome')
-
+@extends('master')
+@push('css')
+    <style>
+        .result-card {
+            background: linear-gradient(to left, #a1c4fd, #c2e9fb);
+            color: white;
+            border-radius: 10px;
+            }
+    </style>
+@endpush
 @section('content')
-    <div class="card">
-        <div class="card-header">
-            URL Shortener
-        </div>
-        <div class="card-body">
+    <div class="container">
+        <h1>Welcome to Link Shortener</h1>
+        <p>Shorten your long URLs for easier sharing.</p>
+        <form id="shortenForm">
             <div class="form-group">
-                <label for="originalUrl">Enter your URL:</label>
-                <input type="url" class="form-control" id="originalUrl" placeholder="https://example.com" required>
-                <span id="errorSpan" style="color:red;"></span>
+                <input type="url" id="urlInput" class="form-control" placeholder="Enter URL with http">
             </div>
-            <button class="btn btn-primary btn-block" id="shortenBtn">Shorten URL</button>
-            <div id="shortenedUrl" data-route="">
-                <p><strong>Shortened URL:</strong></p>
-                <a href="#" target="_blank" id="shortUrlLink"></a>
-            </div>
-        </div>
+            <button type="submit" class="btn btn-primary" id="shortenBtn">Shorten</button>
+        </form>
+        <div id="result" class="mt-3"></div>
     </div>
 @endsection
 
 @push('js')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#shortenBtn').click(function () {
+        // Prevent the default form submission behavior
+        document.getElementById('shortenForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-                var originalUrl = $('#originalUrl').val();
+            // Simulate a shortened URL
+            var originalUrl = document.getElementById('urlInput').value;
+            var userId = @json(auth()->check() ? auth()->user()->id : null);
+            var baseUrl = "{{ url('/') }}";
 
-                // Validate the URL using the 'validator' library
-                if (!validator.isURL(originalUrl, {require_protocol: true})) {
-                    $('#errorSpan').text("Please enter a valid URL.");
-                    document.getElementById("shortenedUrl").style.display = "none";
-                    return;
-                } else {
-                    $('#errorSpan').text("");
+            $.ajax({
+                url: '/api/getShorteningLink',
+                method: 'GET',
+                data: {
+                    originalUrl: originalUrl,
+                    userId: userId
+                },
+                success: function(response) {
+                    var shortenedURL = response.data;
+                    var redirectUrl = baseUrl + '/' + shortenedURL;
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = `
+                            <div class="card result-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Shortened URL</h5>
+                                <p class="card-text" style><a href="${redirectUrl}" class="text-white" target="_blank">{{ env('APP_URL') }}/${shortenedURL}</a></p>
+                                <button class="btn btn-light" onclick="copyToClipboard('{{ env('APP_URL') }}/${shortenedURL}')">Copy to Clipboard</button>
+                            </div>
+                            </div>
+                        `;
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
                 }
-
-                var userId = @json(auth()->check() ? auth()->user()->id : null);
-                var baseUrl = "{{ url('/') }}";
-
-                $.ajax({
-                    url: '/api/getShorteningLink',
-                    method: 'GET',
-                    data: {
-                        originalUrl: originalUrl,
-                        userId: userId
-                    },
-                    success: function (response) {
-                        console.log(response);
-                        var shortenedUrl = response.data;
-                        var redirectUrl = baseUrl + '/' + shortenedUrl;
-                        $('#shortUrlLink').attr('href', redirectUrl).text("{{ env('APP_URL') }}" + "/" + shortenedUrl);
-
-                        document.getElementById("shortenedUrl").style.display = "block";
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
             });
+
+
         });
 
+        // Copy text to clipboard
+        function copyToClipboard(text) {
+            var tempInput = document.createElement("input");
+            tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+        }
     </script>
 @endpush
