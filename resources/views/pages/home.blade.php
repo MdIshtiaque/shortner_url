@@ -15,6 +15,7 @@
         <form id="shortenForm">
             <div class="form-group">
                 <input type="url" id="urlInput" class="form-control" placeholder="Enter URL with http">
+                <span class="text-warning" id="errorSpan"></span>
             </div>
             <button type="submit" class="btn btn-primary" id="shortenBtn">Shorten</button>
         </form>
@@ -23,6 +24,7 @@
 @endsection
 
 @push('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
     <script>
         // Prevent the default form submission behavior
         document.getElementById('shortenForm').addEventListener('submit', function(event) {
@@ -32,6 +34,15 @@
             var originalUrl = document.getElementById('urlInput').value;
             var userId = @json(auth()->check() ? auth()->user()->id : null);
             var baseUrl = "{{ url('/') }}";
+
+            if (!validator.isURL(originalUrl, {require_protocol: true})) {
+                $('#errorSpan').text("Please enter a valid URL.");
+                document.getElementById("result").style.display = "none";
+                return;
+            } else {
+                $('#errorSpan').text("");
+                document.getElementById("result").style.display = "block";
+            }
 
             $.ajax({
                 url: '/api/getShorteningLink',

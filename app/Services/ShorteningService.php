@@ -12,7 +12,7 @@ class ShorteningService
 
     private function shortUrlLogic(Request $request): string
     {
-        return unique_short_url(ShorteningLink::class, "shortening_link");
+        return unique_short_url(ShorteningLink::class, "shortening_link", $request->originalUrl);
     }
 
     public function getShorteningLink(Request $request): string

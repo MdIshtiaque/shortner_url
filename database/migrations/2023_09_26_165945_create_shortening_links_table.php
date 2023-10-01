@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('original_link');
             $table->string('shortening_link')->unique();
             $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->boolean('matched')->default(false);
             $table->timestamps();
         });
     }
